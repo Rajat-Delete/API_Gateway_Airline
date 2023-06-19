@@ -23,7 +23,30 @@ async function signUp(request,response){
 
 }
 
+async function signIn(request,response){
+    try{
+        const resp = await UserService.signin({
+            email: request.body.email,
+            password : request.body.password
+        });
+        console.log('resp in singin controller',resp);
+        SuccesResponse.data = resp;
+        return response
+        .status(StatusCodes.OK)
+        .json(SuccesResponse);
+    }
+    catch(error){
+        ErrorResponse.error = error;
+        return response
+        .status(error.statusCode)
+        .json(ErrorResponse);
+    }
+
+}
+
+
+
 module.exports={
     signUp,
-
+    signIn
 }
