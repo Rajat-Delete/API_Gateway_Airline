@@ -53,8 +53,53 @@ async function signin(data){
 }
 
 
+async function isAuthenticatedUser(token){
+    try {
+        //if token is not present then we will throw a new error 
+        if(!token){
+            throw new AppError('Missing JWT Token', StatusCodes.BAD_REQUEST);
+        }
+        const response = Auth.verifyToken(token);
+        /*
+        Post verifying the token we will be getting the same input which we have used for creating the token 
+
+        {
+        id: 9,
+        email: 'testinguser@icicibank.com',
+        iat: 1687282426,
+        exp: 1687286026
+        }
+        */
+        console.log(response);
+
+
+
+        /*
+        Now we have validated the token but if there some details of our secret key are compromised and
+        we are getting the request from a random email. So better to validate the user Id as well post authentication.
+        */
+       const user = await userRepository.get(response.id);
+       if(!user){
+            throw new AppError('UserId not found in the Database',StatusCodes.NOT_FOUND);
+       }
+       return user.id; 
+    } catch (error) {
+        if(error instanceof AppError) throw error;
+        if(error.name == 'JsonWebTokenError'){
+            throw new AppError('Invalid JWT Token', StatusCodes.BAD_REQUEST);
+        }
+        if(error.name == 'TokenExpiredError'){
+            throw new AppError('JWT Token Expired', StatusCodes.BAD_REQUEST);
+        }
+        console.log(error);
+        throw error;
+    }
+}
+
+
 
 module.exports = {
     createUser,
-    signin
+    signin,
+    isAuthenticatedUser
 }
