@@ -11,11 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.Role ,{through: 'User_Roles', as : 'role'});
     }
   }
   User_Role.init({
-    user_id:{
+    userId:{
       type : DataTypes.INTEGER,
       allowNull : false,
       references : {
@@ -24,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       OnDelete : 'CASCADE'
     } ,
-    role_id: {
+    roleId: {
       type : DataTypes.INTEGER,
       allowNull : false,
       references : {
