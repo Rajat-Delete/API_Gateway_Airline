@@ -100,10 +100,51 @@ async function isAuthenticatedUser(token){
     }
 }
 
+async function addRoleToUser(data){
+    try {
+        const user = await userRepository.get(data.id);
+        if(!user){
+            throw new AppError('Unable to found User', StatusCodes.NOT_FOUND);
+        }
+        const role = await roleRepository.getRoleByName(data.role);
+        if(!role){
+            throw new AppError('Unable to find the Role',StatusCodes.NOT_FOUND);
+        }
+        user.addRole(role);
+        return user;
+    } catch (error) {
+        if(error instanceof AppError) throw error;
+        console.log('Error Found>>',error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+async function isAdmin(id){
+    try {
+        const user = await userRepository.get(id);
+        if(!user){
+            throw new AppError('No User found for the given role',StatusCodes.NOT_FOUND);
+        }
+        console.log('here')
+        const adminrole = await roleRepository.getRoleByName(Enums.USER_ROLES.ADMIN);
+        if(!adminrole){
+            throw new AppError('No User found for the given role',StatusCodes.NOT_FOUND);
+        }
+        //console.log('rajat>>',user.hasRole(adminrole));
+        return user.hasRole(adminrole);
+    } catch (error) {
+        if(error instanceof AppError) throw error;
+        console.log('Error Found>>',error);
+        throw new AppError('Something Went Wrong',StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 
 
 module.exports = {
     createUser,
     signin,
-    isAuthenticatedUser
+    isAuthenticatedUser,
+    addRoleToUser,
+    isAdmin
 }

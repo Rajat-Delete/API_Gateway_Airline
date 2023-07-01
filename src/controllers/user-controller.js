@@ -46,7 +46,27 @@ async function signIn(request,response){
 
 
 
+async function addRoleToUserController(request,response){
+    try {
+        const resp = await UserService.addRoleToUser({
+            id : request.body.id,
+            role: request.body.role
+        });
+       // console.log(resp);
+        SuccesResponse.data=resp;
+        return response
+        .status(StatusCodes.OK)
+        .json(SuccesResponse);
+    } catch (error) {
+        ErrorResponse.error = error;
+        return response
+        .status(error.statusCode)
+        .json(ErrorResponse);
+    }
+}
+
 module.exports={
     signUp,
-    signIn
+    signIn,
+    addRoleToUserController
 }
